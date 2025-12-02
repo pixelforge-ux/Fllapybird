@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
-<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
   <meta charset="UTF-8" />
   <title>flappy Bird</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+
+  <!-- فونت وزیر -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font/dist/font-face.css">
+
+  <!-- SDK ایتا - طبق دستور شما از همین لینک رسمی استفاده شده -->
+  <!-- مستندات: https://developer.eitaa.com/docs/Develop/JsSDK -->
+  <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -18,7 +24,7 @@
       height: 100%;
       overflow: hidden;
       background: #f3efe7;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Vazir, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     body {
       display: flex;
@@ -901,5 +907,27 @@
 
 <footer class="gold-footer">
   کاری از سید آروین موسوی
+</footer>
+
+<!-- Eitaa SDK integration (safe-guarded): enables closing confirmation and adapts to viewport changes. -->
+<script>
+try {
+  if (window.Eitaa && Eitaa.WebApp) {
+    // فعال کردن پیام "آیا از خروج مطمئن هستید؟"
+    Eitaa.WebApp.enableClosingConfirmation();
+
+    // وقتی ارتفاع ویوپورت تغییر کرد، ارتفاع ریشه بازی را مطابق آن تنظیم کن
+    Eitaa.WebApp.onEvent('viewportChanged', (data) => {
+      const root = document.getElementById('game-root');
+      if (root && data && data.height) {
+        // data.height معمولاً به صورت پیکسل است؛ تضمین کنیم رشته‌ای نباشد
+        root.style.height = (Number(data.height) || data.height) + 'px';
+      }
+    });
+  }
+} catch (err) {
+  console.warn('Eitaa SDK unavailable or threw an error:', err);
+}
+</script>
 </body>
 </html>
