@@ -247,7 +247,7 @@
           <div class="panel-stat-value" id="start-last">0</div>
         </div>
       </div>
-      <div class="panel-buttons">
+      <div style="margin-bottom:12px;text-align:center;"><label style="font-size:13px;font-weight:600;">سختی:<select id="difficulty" style="padding:6px 10px;border-radius:8px;border:1px solid #ccc;font-size:13px;"><option value="easy">آسون</option><option value="medium" selected>متوسط</option><option value="hard">سخت</option></select></label></div><div class="panel-buttons">
         <button class="btn btn-primary" id="btn-start">
           شروع
         </button>
@@ -354,8 +354,9 @@
   const PIPE_SPEED = 180;
   const PIPE_INTERVAL_MIN = 1.0;
   const PIPE_INTERVAL_MAX = 1.5;
-  const PIPE_GAP_MIN = 135;
-  const PIPE_GAP_MAX = 170;
+  let DIFF = 'medium';
+const PIPE_GAP_MIN_BASE = 135;
+  const PIPE_GAP_MAX_BASE = 170;
   const PIPE_WIDTH = 64;
   const GROUND_HEIGHT = 72;
 
@@ -393,7 +394,13 @@
   }
 
   function spawnPipe() {
-    const gap = randomRange(PIPE_GAP_MIN, PIPE_GAP_MAX);
+    
+let gmin = PIPE_GAP_MIN_BASE;
+let gmax = PIPE_GAP_MAX_BASE;
+if(DIFF==='easy'){gmin+=40; gmax+=40;}
+else if(DIFF==='hard'){gmin-=40; gmax-=40;}
+const gap = randomRange(gmin, gmax);
+
     const margin = 40;
     const maxTop = height - GROUND_HEIGHT - margin - gap;
     const top = randomRange(margin, Math.max(margin, maxTop));
@@ -484,6 +491,7 @@
   });
 
   // Buttons
+  document.getElementById('difficulty').addEventListener('change', e=>{DIFF=e.target.value;});
   document.getElementById('btn-start').addEventListener('click', () => {
     hasInteracted = true;
     startGame();
