@@ -6,49 +6,31 @@
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.Eitaa || !Eitaa.WebApp) return;
-  
-  const app = Eitaa.WebApp;
-  app.ready();
-  app.expand?.();
-  app.setHeaderColor?.('#FFA500');
-  app.enableClosingConfirmation?.();
-  app.disableVerticalSwipes?.();
+  try {
+    if (!window.Eitaa || !Eitaa.WebApp) return;
+    
+    const app = Eitaa.WebApp;
+    app.ready();
+    app.expand?.();
+    app.setHeaderColor?.('#FFA500');
+    app.enableClosingConfirmation?.();
+    app.disableVerticalSwipes?.();
 
-  // متغیری برای صفحه اصلی
-  let isMainPage = true; // صفحه اصلی true، صفحات داخلی false
-
-  // تابع به‌روزرسانی BackButton
-  function updateBackButton() {
-    if (isMainPage) {
+    // ---- کنترل دکمه Back فقط در صفحه اصلی ----
+    if (app.BackButton) {
+      // صفحه اصلی → دکمه Back مخفی
       app.BackButton.hide();
-    } else {
-      app.BackButton.show();
+
+      // کلیک Back
+      app.BackButton.onClick(() => {
+        // اگر صفحه داخلی، history.back(); اگر در صفحه اصلی، WebApp.close()
+        app.close(); // صفحه اصلی
+      });
     }
+
+  } catch(e) {
+    console.warn(e);
   }
-
-  updateBackButton();
-
-  // کلیک روی Back
-  app.BackButton.onClick(() => {
-    if (!isMainPage) {
-      // وقتی داخل بازی هستیم
-      window.history.back(); // یا هر منطق رفتن به صفحه قبلی
-    } else {
-      app.close(); // فقط وقتی در صفحه اصلی هستیم
-    }
-  });
-
-  // ✅ یک مثال ساده برای تغییر صفحه بدون دست زدن به بازی
-  window.enterGame = function() {
-    isMainPage = false;
-    updateBackButton();
-  };
-
-  window.exitToMain = function() {
-    isMainPage = true;
-    updateBackButton();
-  };
 });
 </script>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
