@@ -3,38 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <title>Flappy Bird+</title>
-      <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    if (window.Eitaa && Eitaa.WebApp) {
-      Eitaa.WebApp.ready();
+    if (!window.Eitaa || !Eitaa.WebApp) return;
 
-      // تمام صفحه شدن
-      if (Eitaa.WebApp.expand)
-        Eitaa.WebApp.expand();
+    const app = Eitaa.WebApp;
+    app.ready();
 
-      // تغییر رنگ هدر به آبی مایل به سفید (ثابت)
-      if (Eitaa.WebApp.setHeaderColor)
-        Eitaa.WebApp.setHeaderColor('#FFA500');
+    // فول‌اسکرین
+    app.expand?.();
 
-      // تایید قبل از بستن WebApp
-      if (Eitaa.WebApp.enableClosingConfirmation)
-        Eitaa.WebApp.enableClosingConfirmation();
+    // رنگ هدر
+    app.setHeaderColor?.('#FFA500');
 
-      // غیرفعال کردن سوایپ عمودی (اگر پشتیبانی شود)
-      if (Eitaa.WebApp.disableVerticalSwipes)
-        Eitaa.WebApp.disableVerticalSwipes();
+    // تایید خروج
+    app.enableClosingConfirmation?.();
 
-      // دکمه بک
-      Eitaa.WebApp.onEvent('backButtonClicked', () => {
-        if (history.length > 1) {
-          history.back();
-        } else {
-          Eitaa.WebApp.close();
-        }
-      });
+    // وضعیت صفحه
+    function updateBackButton() {
+      if (history.length > 1) {
+        app.BackButton.show();
+      } else {
+        app.BackButton.hide();
+      }
     }
+
+    // اجرای اولیه
+    updateBackButton();
+
+    // کلیک روی بک
+    app.BackButton.onClick(() => {
+      if (history.length > 1) {
+        history.back();
+      } else {
+        app.close();
+      }
+    });
+
+    // هر بار history عوض شد
+    window.addEventListener('popstate', updateBackButton);
+
   } catch (e) {
     console.warn(e);
   }
