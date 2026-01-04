@@ -6,48 +6,49 @@
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  try {
-    if (!window.Eitaa || !Eitaa.WebApp) return;
+  if (!window.Eitaa || !Eitaa.WebApp) return;
+  
+  const app = Eitaa.WebApp;
+  app.ready();
+  app.expand?.();
+  app.setHeaderColor?.('#FFA500');
+  app.enableClosingConfirmation?.();
+  app.disableVerticalSwipes?.();
 
-    const app = Eitaa.WebApp;
-    app.ready();
+  // متغیری برای صفحه اصلی
+  let isMainPage = true; // صفحه اصلی true، صفحات داخلی false
 
-    // فول‌اسکرین
-    app.expand?.();
-
-    // رنگ هدر
-    app.setHeaderColor?.('#FFA500');
-
-    // تایید خروج
-    app.enableClosingConfirmation?.();
-
-    // وضعیت صفحه
-    function updateBackButton() {
-      if (history.length > 1) {
-        app.BackButton.show();
-      } else {
-        app.BackButton.hide();
-      }
+  // تابع به‌روزرسانی BackButton
+  function updateBackButton() {
+    if (isMainPage) {
+      app.BackButton.hide();
+    } else {
+      app.BackButton.show();
     }
-
-    // اجرای اولیه
-    updateBackButton();
-
-    // کلیک روی بک
-    app.BackButton.onClick(() => {
-      if (history.length > 1) {
-        history.back();
-      } else {
-        app.close();
-      }
-    });
-
-    // هر بار history عوض شد
-    window.addEventListener('popstate', updateBackButton);
-
-  } catch (e) {
-    console.warn(e);
   }
+
+  updateBackButton();
+
+  // کلیک روی Back
+  app.BackButton.onClick(() => {
+    if (!isMainPage) {
+      // وقتی داخل بازی هستیم
+      window.history.back(); // یا هر منطق رفتن به صفحه قبلی
+    } else {
+      app.close(); // فقط وقتی در صفحه اصلی هستیم
+    }
+  });
+
+  // ✅ یک مثال ساده برای تغییر صفحه بدون دست زدن به بازی
+  window.enterGame = function() {
+    isMainPage = false;
+    updateBackButton();
+  };
+
+  window.exitToMain = function() {
+    isMainPage = true;
+    updateBackButton();
+  };
 });
 </script>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
