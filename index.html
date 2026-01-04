@@ -6,31 +6,50 @@
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  try {
-    if (!window.Eitaa || !Eitaa.WebApp) return;
-    
-    const app = Eitaa.WebApp;
-    app.ready();
-    app.expand?.();
-    app.setHeaderColor?.('#FFA500');
-    app.enableClosingConfirmation?.();
-    app.disableVerticalSwipes?.();
+  if (!window.Eitaa || !Eitaa.WebApp) return;
 
-    // ---- کنترل دکمه Back فقط در صفحه اصلی ----
-    if (app.BackButton) {
-      // صفحه اصلی → دکمه Back مخفی
-      app.BackButton.hide();
+  const app = Eitaa.WebApp;
+  app.ready();
+  app.expand?.();
+  app.setHeaderColor?.('#FFA500');
+  app.enableClosingConfirmation?.();
+  app.disableVerticalSwipes?.();
 
-      // کلیک Back
-      app.BackButton.onClick(() => {
-        // اگر صفحه داخلی، history.back(); اگر در صفحه اصلی، WebApp.close()
-        app.close(); // صفحه اصلی
-      });
-    }
+  // ---------- BACK BUTTON ----------
+  if (app.BackButton) {
+    // همیشه ابتدا مخفی باشه
+    app.BackButton.hide();
 
-  } catch(e) {
-    console.warn(e);
+    // ثبت کلیک Back
+    app.BackButton.onClick(() => {
+      // وقتی BackButton فعال شد، صفحات داخلی با این تابع کنترل می‌شوند
+      if (window.onInternalBack) {
+        window.onInternalBack(); // تابع داخلی بازی برای برگشت
+      } else {
+        app.close(); // اگر هیچ تابعی مشخص نشده، WebApp بسته می‌شود
+      }
+    });
   }
+
+  // ---------- تابع فعال‌سازی Back در صفحات داخلی ----------
+  window.enableInternalBack = function() {
+    if (app.BackButton) app.BackButton.show();
+    // اینجا می‌تونی یک تابع عمومی برای برگشت در بازی تعریف کنی
+    window.onInternalBack = function() {
+      // مثلاً صفحه قبلی یا منوی قبل
+      if (window.goBackInGame) window.goBackInGame();
+      else app.close(); // fallback
+    };
+  };
+
+  // ---------- تابع غیرفعال‌سازی Back (صفحه اصلی) ----------
+  window.disableInternalBack = function() {
+    if (app.BackButton) app.BackButton.hide();
+    window.onInternalBack = null;
+  };
+
+  // ---------- شروع در صفحه اصلی ----------
+  disableInternalBack(); // BackButton مخفی
 });
 </script>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
